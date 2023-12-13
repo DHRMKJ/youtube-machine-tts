@@ -29,7 +29,7 @@ int main() {
 	headers = curl_slist_append(headers, config[2]);
 	curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, headers);
 
-	curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, "src=What's up Palak and Dharmik Seriously guys!, you weirdos!&hl=en-us&r=0&c=mp3&f=8khz_8bit_mono");
+	curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, "src=what's up guys Seriously guys! you weirdos!&hl=en-us&v=Mary&r=0&c=mp3&f=ulaw_44khz_stereo");
 
 	free_config(config);
 	FILE *response_file = fopen("output/response.mp3", "wb");
