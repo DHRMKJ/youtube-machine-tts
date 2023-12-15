@@ -13,16 +13,9 @@ size_t WriteCallback(void *contents, size_t size, size_t nmemb, FILE *file) {
     	return realsize;
 }
 
-int main() {
-	CURL *hnd = curl_easy_init();
-	
-	if(!hnd) {
-		printf("[ERROR]: fatal could not intialize curl");
-		return 0;
-	}
-	
+void make_audio(CURL* hnd, size_t ind) {
 	char** config = get_config();
-	
+
 	curl_easy_setopt(hnd, CURLOPT_CUSTOMREQUEST, "POST");
 	curl_easy_setopt(hnd, CURLOPT_URL, config[0]);
 
@@ -32,7 +25,7 @@ int main() {
 	headers = curl_slist_append(headers, config[2]);
 	curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, headers);
 	
-	char *story = strdup(stories[0]);
+	char *story = strdup(stories[ind]);
 	char query[] = "&hl=en-us&v=Mary&r=0&c=mp3&f=ulaw_44khz_stereo";
 	char *params = (char*)malloc(5 + strlen(story) + strlen(query));
 	char src[] = "src=";
@@ -44,26 +37,37 @@ int main() {
 	curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, real_params);
 	free(params);
 	free_config(config);
-	FILE *response_file = fopen("output/aud.mp3", "wb");
+	char audio_path[] = "output/audio.mp3";
+	char *dot_pos = strchr(audio_path, '.');
+	char aud_path[30];
+	size_t dot = dot_pos - audio_path;
+	strncpy(aud_path, audio_path, dot);
+	snprintf(aud_path + dot, sizeof(aud_path) - dot, "%ld", ind);
+	strncat(aud_path, dot_pos, sizeof(aud_path) - strlen(aud_path) - 1);
+	printf("%s \n", aud_path);
+	FILE *response_file = fopen(aud_path, "wb");
 	curl_easy_setopt(hnd, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(hnd, CURLOPT_WRITEDATA, response_file);
 
 	CURLcode ret = curl_easy_perform(hnd);
-	
-	/*if(CURLE_OK == ret) {
-		char *ct; // content type
-		
-		ret = curl_easy_getinfo(hnd, CURLINFO_CONTENT_TYPE, &ct);
-
-		if((CURLE_OK == ret) && ct)
-			printf("We received Content-Type: %s\n", ct);
-	}*/
 
 	if(ret != CURLE_OK) {
 		fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(ret));
 	}
 	curl_slist_free_all(headers);
-	curl_easy_cleanup(hnd);
 	fclose(response_file);
+}
+
+int main() {
+	CURL *hnd = curl_easy_init();
+	
+	if(!hnd) {
+		printf("[ERROR]: fatal could not intialize curl");
+		return 0;
+	}
+	for(size_t i = 0; i < sizeof(stories)/sizeof(stories[0]); i++) {
+		make_audio(hnd, i);	
+	}
+	curl_easy_cleanup(hnd);
 	return 0;
 }
