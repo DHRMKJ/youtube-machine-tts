@@ -1,5 +1,8 @@
 #include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
 #include<curl/curl.h>
+#include "stories.h"
 
 char **get_config();
 void free_config(char** config_param);
@@ -28,11 +31,20 @@ int main() {
 	headers = curl_slist_append(headers, config[1]);
 	headers = curl_slist_append(headers, config[2]);
 	curl_easy_setopt(hnd, CURLOPT_HTTPHEADER, headers);
-
-	curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, "src=what's up guys Seriously guys! you weirdos!&hl=en-us&v=Mary&r=0&c=mp3&f=ulaw_44khz_stereo");
-
+	
+	char *story = strdup(stories[0]);
+	char query[] = "&hl=en-us&v=Mary&r=0&c=mp3&f=ulaw_44khz_stereo";
+	char *params = (char*)malloc(5 + strlen(story) + strlen(query));
+	char src[] = "src=";
+	strcpy(params, src);
+	strcat(params, story);
+	strcat(params, query);
+	char real_params[strlen(params)];
+	strcpy(real_params, params);
+	curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, real_params);
+	free(params);
 	free_config(config);
-	FILE *response_file = fopen("output/response.mp3", "wb");
+	FILE *response_file = fopen("output/aud.mp3", "wb");
 	curl_easy_setopt(hnd, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(hnd, CURLOPT_WRITEDATA, response_file);
 
