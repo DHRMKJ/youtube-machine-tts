@@ -37,7 +37,7 @@ void make_audio(CURL* hnd, size_t ind) {
 	curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, real_params);
 	free(params);
 	free_config(config);
-	char audio_path[] = "output/audios/a.mp3";
+	char audio_path[] = "out/audios/a.mp3";
 	char *dot_pos = strchr(audio_path, '.');
 	char aud_path[50];
 	size_t dot = dot_pos - audio_path;

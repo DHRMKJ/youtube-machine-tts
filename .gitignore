@@ -1,2 +1,4 @@
 .env
 lib/
+out/videos/
+out/build/

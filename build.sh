@@ -1,32 +1,28 @@
-#!/bin/sh
+#!/bin/bash
 
 set -xe
 
 gcc -Wall -Werror -o build/prog ./src/main.c ./src/config.c -I ./include -L ./lib -l curl
 
-./build/prog
- 
+#./build/prog
 
-#indir = "/output/"
-#outdir = "/output/build"
+main_dir="./out"
+out_dir="./out/build"
+v=()
 
-#mkdir -p "$outdir"
+for video in "$main_dir"/videos/*
+do
+	v+=("$video")
+done
 
-#videos=$(ls -1 "$indir/videos"/*.mp4 | sort)
-#audios=$(ls -1 "$indir/audios"/*.mp3 |sort)
+ind=0
 
-#if [ ${#videos[@]} -eq ${#audios[@]} ]; then
-#	for ((i=0; i<${vidoes[@]}; i++)); do
-#		video_file="${videos[$i]}"
-#		audio_file="${audios[$i]}"
-#
-#		vname=$(basename "${video_file%.*}")
-#		output_vid="$outdir/vid$i.mp4"
-
-#		ffmpeg -i "$video_file" -i "$audios[$i]" -vcodec copy -acodec copy -map 0:0 -map 1:0 "$output_vid"
-#		echo "Processed: $output_vid"
-#	done
-#else 
-#	echo "Error: shit happened"
-#fi
-
+for audio in "$main_dir"/audios/*
+do
+ 	ffmpeg -i "${v[$ind]}" -i "$audio" -vcodec copy -acodec copy -map 0:0 -map 1:0 "$out_dir/vid$ind.mp4"
+	ind=$((ind+1))
+	if "$ind">="${#v[@]}"
+	then
+		break
+	fi
+done
