@@ -2,7 +2,7 @@
 #include<string.h>
 #include<stdlib.h>
 #include<curl/curl.h>
-#include "stories.h"
+#include<stories.h>
 
 char **get_config();
 void free_config(char** config_param);
@@ -37,9 +37,9 @@ void make_audio(CURL* hnd, size_t ind) {
 	curl_easy_setopt(hnd, CURLOPT_POSTFIELDS, real_params);
 	free(params);
 	free_config(config);
-	char audio_path[] = "output/audio.mp3";
+	char audio_path[] = "output/audios/a.mp3";
 	char *dot_pos = strchr(audio_path, '.');
-	char aud_path[30];
+	char aud_path[50];
 	size_t dot = dot_pos - audio_path;
 	strncpy(aud_path, audio_path, dot);
 	snprintf(aud_path + dot, sizeof(aud_path) - dot, "%ld", ind);
